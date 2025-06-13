@@ -29,13 +29,15 @@
 
     {{-- Tailwind CSS via Vite --}}
     @vite('resources/css/app.css')
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 </head>
-<body class="antialiased font-sans bg-black/90 text-gray-800">
+<body x-data="{ open: false }" class="antialiased font-sans bg-black/90 text-gray-800">
 
     {{-- Navigation Bar --}}
    <nav class="flex justify-between items-center px-6 py-4 text-white   w-full z-50">
     {{-- Left: Hamburger Menu Icon --}}
-    <img src="/images/icons/hamburger-white.png" alt="" class="w-9 h-9 cursor-pointer">
+       <img @click="open = true" src="/images/icons/hamburger-white.png" alt="Menu" class="w-9 h-9 cursor-pointer">
 
     {{-- Center: Logo --}}
     <div class="text-center">
@@ -66,5 +68,39 @@
 
     {{-- HTMX Script --}}
     <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+
+    <div
+        x-show="open"
+        x-transition.opacity
+        class="fixed inset-0 bg-black text-white z-50 flex flex-col items-center justify-center space-y-6 text-2xl font-semibold tracking-wide"
+        style="display: none;"
+    >
+        <button @click="open = false" class="absolute top-6 left-6 text-white text-3xl">
+            ✕
+        </button>
+
+        <img src="{{ asset('images/cookietime_logo.png') }}" alt="CookieTime" class="h-20 mb-8">
+
+        @php
+            $links = [
+                ['label' => 'BUILD A BOX', 'href' => '#'],
+                ['label' => 'COOKIE CATALOGUE', 'href' => '#'],
+                ['label' => 'CUSTOM REQUESTS', 'href' => '#'],
+                ['label' => 'CATERING', 'href' => '#'],
+                ['label' => 'GIFT CARDS', 'href' => '#'],
+                ['label' => 'OUR STORY', 'href' => '#'],
+                ['label' => 'CONTACT US', 'href' => '#'],
+                ['label' => 'FAQ', 'href' => '#'],
+            ];
+        @endphp
+
+        @foreach ($links as $link)
+            <div class="text-center">
+                <a href="{{ $link['href'] }}" class="hover:text-amber-400 transition">{{ $link['label'] }}</a>
+                <div class="text-xs text-zinc-500 mt-1">✶ ✶ ✶ ✶ ✶</div>
+            </div>
+        @endforeach
+    </div>
+
 </body>
 </html>
