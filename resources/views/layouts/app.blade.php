@@ -9,8 +9,6 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
     {{-- Tailwind CSS via Vite --}}
     @vite('resources/css/app.css')
 </head>
@@ -24,7 +22,7 @@
     {{-- Center: Logo --}}
     <div class="text-center">
         <a href="{{ url('/') }}" class="text-3xl font-bold font-cursive tracking-wide">
-            <img src="/images/cookietime_logo.png" alt="CookieTime" class="h-50 mx-auto">
+            <img src="/images/cookietime_logo.png" alt="CookieTime" class="h-40 mx-auto">
         </a>
     </div>
 

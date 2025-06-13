@@ -17,7 +17,7 @@
                     locking it to the left column.
                 --}}
                 <div class="lg:row-span-3 rounded-2xl overflow-hidden group shadow-lg">
-                    <img src="/images/hero-cookies.jpg" alt="A lifestyle shot of delicious cookies"
+                    <img src="https://i.etsystatic.com/20070846/r/il/9b9dcc/2354242698/il_fullxfull.2354242698_foka.jpg" alt="A lifestyle shot of delicious cookies"
                          class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
                 </div>
 
@@ -35,7 +35,7 @@
 
                 {{-- Promo 2: Variety Pack. On desktop, this flows into column 2, row 2. --}}
                 <div class="relative rounded-2xl overflow-hidden shadow-lg group h-full min-h-[250px]">
-                    <img src="/images/variety-pack.jpg" alt="A variety pack of cookies" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
+                    <img src="https://thegracefulbakershop.com/cdn/shop/files/IMG_33264.jpg?v=1715784095" alt="A variety pack of cookies" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end items-center text-center p-6">
                         <h2 class="text-3xl font-bold text-white">Variety Pack</h2>
                         <p class="text-zinc-200 mt-1 mb-4">The best of what's baking right now.</p>
@@ -48,7 +48,7 @@
 
                 {{-- Promo 3: Jam Session. On desktop, this flows into column 2, row 3. --}}
                 <div class="relative rounded-2xl overflow-hidden shadow-lg group h-full min-h-[250px]">
-                    <img src="/images/jam-session.png" alt="A fruit-jam-filled cookie" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
+                    <img src="https://cdn.prod.website-files.com/5ce56b0f27a2154164088913/629ca34ac8ec9f112c2658ea_ice_cream_platter_thumb.jpg" alt="A fruit-jam-filled cookie" class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end items-center text-center p-6">
                         <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Limited Time</p>
                         <h2 class="text-3xl font-bold text-white mt-1">Jam Session</h2>
@@ -64,12 +64,20 @@
             {{-- Featured Flavors Section --}}
             <div class="text-center mt-20 py-10 border-t-2 border-zinc-800">
                 <h3 class="text-sm uppercase text-zinc-500 tracking-widest mb-4">Straight from the oven</h3>
-                <div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-xl md:text-2xl font-bold text-zinc-200">
-                    <a href="#" class="hover:text-amber-400 transition">JAM SESSION</a>
-                    <span class="text-zinc-700 hidden md:inline">/</span>
-                    <a href="#" class="hover:text-amber-400 transition">COMING OUT HOT</a>
-                    <span class="text-zinc-700 hidden md:inline">/</span>
-                    <a href="#" class="hover:text-amber-400 transition">CINNA-DUNK'D</a>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 text-xl md:text-2xl font-bold text-zinc-200">
+                  <div>
+                      <img src="/images/hero-cookies.jpg" alt="">
+                      <a href="#" class="hover:text-amber-400 transition">JAM SESSION</a>
+                  </div>
+                    <div>
+                        <img src="/images/hero-cookies.jpg" alt="">
+                        <a href="#" class="hover:text-amber-400 transition">COMING OUT HOT</a>
+                    </div>
+                    <div>
+                        <img src="/images/hero-cookies.jpg" alt="">
+                        <a href="#" class="hover:text-amber-400 transition">CINNA-DUNK'D</a>
+                    </div>
+
                 </div>
             </div>
         </div>
