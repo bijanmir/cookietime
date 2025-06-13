@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cookie Time!</title>
 
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="CookieTime – Where your favorite cookies come to life! Build your custom cookie box or choose from our best-sellers. Fresh. Fun. Delicious.">
+    <meta name="keywords" content="cookies, cookie shop, fresh cookies, build a box, chocolate chip, cookie delivery">
+    <meta name="author" content="CookieTime">
+
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="CookieTime 🍪">
+    <meta property="og:description" content="Custom cookie boxes made fresh. Build your own or grab a variety pack!">
+    <meta property="og:image" content="{{ asset('images/cookietime_logo.png') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CookieTime 🍪">
+    <meta name="twitter:description" content="Fresh cookies, your way. Build your own box!">
+    <meta name="twitter:image" content="{{ asset('images/cookietime_logo.png') }}">
+
     {{-- Custom Fonts --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
