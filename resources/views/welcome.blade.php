@@ -24,7 +24,7 @@
                 {{-- Promo 1: Build a Box. On desktop, this automatically flows into column 2, row 1. --}}
                 <div class="bg-zinc-800 rounded-2xl p-8 flex flex-col justify-center text-center ring-1 ring-white/10 shadow-lg h-full">
                     <p class="text-sm text-zinc-400 uppercase tracking-widest">Your Cravings, Your Rules</p>
-                    <h2 class="text-4xl font-bold text-amber-400 mt-2 mb-3">Build a Box</h2>
+                    <h2 class="text-4xl font-bold text-amber-400 mt-2 mb-3">Build a Box Check</h2>
                     <p class="text-zinc-300 mb-6">Hand-pick your favorites to create the perfect dozen.</p>
                     <a href="#"
                        class="bg-amber-400 text-zinc-900 font-bold py-3 px-8 rounded-full self-center
