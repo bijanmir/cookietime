@@ -1,106 +1,236 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en" x-data>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cookie Time!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'CookieTime - Premium Handcrafted Cookies')</title>
 
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CookieTime – Where your favorite cookies come to life! Build your custom cookie box or choose from our best-sellers. Fresh. Fun. Delicious.">
-    <meta name="keywords" content="cookies, cookie shop, fresh cookies, build a box, chocolate chip, cookie delivery">
-    <meta name="author" content="CookieTime">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Open Graph Meta -->
-    <meta property="og:title" content="CookieTime 🍪">
-    <meta property="og:description" content="Custom cookie boxes made fresh. Build your own or grab a variety pack!">
-    <meta property="og:image" content="{{ asset('images/cookietime_logo.png') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:type" content="website">
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="CookieTime 🍪">
-    <meta name="twitter:description" content="Fresh cookies, your way. Build your own box!">
-    <meta name="twitter:image" content="{{ asset('images/cookietime_logo.png') }}">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    {{-- Custom Fonts --}}
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    {{-- Tailwind CSS via Vite --}}
-    @vite('resources/css/app.css')
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        .sticky-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+        }
 
+        .cookie-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cookie-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .quantity-btn {
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-badge {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
-<body x-data="{ open: false }" class="antialiased font-sans bg-black/90 text-gray-800">
+<body class="bg-gray-50" x-data="appData()">
+<!-- Navigation -->
+<nav class="bg-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="{{ route('cookies.index') }}" class="flex items-center">
+                    <i class="fas fa-cookie-bite text-3xl text-amber-600 mr-2"></i>
+                    <span class="text-2xl font-bold text-gray-800">CookieTime</span>
+                </a>
+            </div>
 
-    {{-- Navigation Bar --}}
-   <nav class="flex justify-between items-center px-6 py-4 text-white   w-full z-50">
-    {{-- Left: Hamburger Menu Icon --}}
-       <img @click="open = true" src="/images/icons/hamburger-white.png" alt="Menu" class="w-9 h-9 cursor-pointer">
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{{ route('cookies.index') }}" class="text-gray-700 hover:text-amber-600 px-3 py-2 rounded-md font-medium transition-colors">
+                    Our Cookies
+                </a>
+                <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-amber-600 px-3 py-2 rounded-md font-medium transition-colors">
+                    My Box
+                </a>
 
-    {{-- Center: Logo --}}
-    <div class="text-center">
-        <a href="{{ url('/') }}" class="text-3xl font-bold font-cursive tracking-wide">
-            <img src="/images/cookietime_logo.png" alt="CookieTime" class="h-40 mx-auto">
-        </a>
+                <!-- Cart Badge -->
+                <div class="relative">
+                    <a href="{{ route('cart.index') }}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        Cart
+                    </a>
+                    <div id="cart-badge"
+                         x-show="$store.cart.totalItems > 0"
+                         x-text="$store.cart.totalItems"
+                         class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center cart-badge">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-700 hover:text-amber-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
-    {{-- Right: Cart Icon with Badge --}}
-    <div class="relative">
-        <a href="{{ route('cart.index') }}" class="w-8 h-8 flex items-center justify-center border border-white rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.2 6.4A1 1 0 007 21h10a1 1 0 001-1.2L16.6 13M7 13l2-6h6l2 6"/>
-            </svg>
-        </a>
-        <span class="absolute -top-2 -right-2 bg-red-500 text-xs text-white font-bold px-1.5 py-0.5 rounded-full">
-            1
-        </span>
+    <!-- Mobile Navigation -->
+    <div x-show="mobileMenuOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-75"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="md:hidden bg-white border-t">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="{{ route('cookies.index') }}" class="block px-3 py-2 text-gray-700 hover:text-amber-600 font-medium">
+                Our Cookies
+            </a>
+            <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-700 hover:text-amber-600 font-medium">
+                My Box
+            </a>
+        </div>
     </div>
 </nav>
 
+<!-- Main Content -->
+<main class="pb-20">
+    @yield('content')
+</main>
 
-    {{-- Main Content Area --}}
-    <main id="content" class="w-full">
-        @yield('content')
-    </main>
-
-    {{-- HTMX Script --}}
-    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
-
-    <div
-        x-show="open"
-        x-transition.opacity
-        class="fixed inset-0 bg-black text-white z-50 flex flex-col items-center justify-center space-y-6 text-2xl font-semibold tracking-wide"
-        style="display: none;"
-    >
-        <button @click="open = false" class="absolute top-6 left-6 text-white text-3xl">
-            ✕
-        </button>
-
-        <img src="{{ asset('images/cookietime_logo.png') }}" alt="CookieTime" class="h-20 mb-8">
-
-        @php
-            $links = [
-                ['label' => 'BUILD A BOX', 'href' => '#'],
-                ['label' => 'COOKIE CATALOGUE', 'href' => '#'],
-                ['label' => 'CUSTOM REQUESTS', 'href' => '#'],
-                ['label' => 'CATERING', 'href' => '#'],
-                ['label' => 'GIFT CARDS', 'href' => '#'],
-                ['label' => 'OUR STORY', 'href' => '#'],
-                ['label' => 'CONTACT US', 'href' => '#'],
-                ['label' => 'FAQ', 'href' => '#'],
-            ];
-        @endphp
-
-        @foreach ($links as $link)
-            <div class="text-center">
-                <a href="{{ $link['href'] }}" class="hover:text-amber-400 transition">{{ $link['label'] }}</a>
-                <div class="text-xs text-zinc-500 mt-1">✶ ✶ ✶ ✶ ✶</div>
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-cookie-bite text-3xl text-amber-400 mr-2"></i>
+                <span class="text-2xl font-bold">CookieTime</span>
             </div>
-        @endforeach
+            <p class="text-gray-400">Handcrafted cookies made with love since 2024</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a href="#" class="text-gray-400 hover:text-amber-400"><i class="fab fa-facebook text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-amber-400"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-amber-400"><i class="fab fa-twitter text-xl"></i></a>
+            </div>
+        </div>
     </div>
+</footer>
+
+<script>
+    // Alpine.js Data
+    function appData() {
+        return {
+            mobileMenuOpen: false,
+
+            init() {
+                // Initialize cart store
+                this.syncCartFromStorage();
+
+                // Listen for cart updates
+                this.$watch('$store.cart.totalItems', () => {
+                    this.updateCartBadge();
+                });
+
+                // Listen for custom cart events
+                document.addEventListener('cart:updated', () => {
+                    this.syncCartFromStorage();
+                });
+
+                document.addEventListener('cart:sync', () => {
+                    this.syncCartFromStorage();
+                });
+            },
+
+            syncCartFromStorage() {
+                const cart = JSON.parse(localStorage.getItem('cookieCart') || '{}');
+                const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+
+                Alpine.store('cart').totalItems = totalItems;
+                Alpine.store('cart').items = cart;
+            },
+
+            updateCartBadge() {
+                const badge = document.getElementById('cart-badge');
+                if (badge) {
+                    badge.classList.add('cart-badge');
+                    setTimeout(() => {
+                        badge.classList.remove('cart-badge');
+                    }, 500);
+                }
+            }
+        }
+    }
+
+    // Alpine.js Cart Store
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('cart', {
+            items: JSON.parse(localStorage.getItem('cookieCart') || '{}'),
+            totalItems: 0,
+
+            init() {
+                this.totalItems = Object.values(this.items).reduce((sum, qty) => sum + qty, 0);
+            },
+
+            updateItem(id, quantity) {
+                if (quantity > 0) {
+                    this.items[id] = quantity;
+                } else {
+                    delete this.items[id];
+                }
+
+                this.totalItems = Object.values(this.items).reduce((sum, qty) => sum + qty, 0);
+                localStorage.setItem('cookieCart', JSON.stringify(this.items));
+
+                // Sync with backend
+                fetch('/cart/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ id: id, quantity: quantity })
+                });
+
+                // Dispatch update event
+                document.dispatchEvent(new CustomEvent('cart:updated'));
+            }
+        });
+    });
+
+    // HTMX Configuration
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configure HTMX
+        htmx.config.requestClass = 'htmx-request';
+        htmx.config.indicatorClass = 'htmx-indicator';
+    });
+</script>
 
 </body>
 </html>

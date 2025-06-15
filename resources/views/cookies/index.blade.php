@@ -1,40 +1,180 @@
 @extends('layouts.app')
 
+@section('title', 'Our Delicious Cookies - CookieTime')
+
 @section('content')
-
-    <div class="relative bg-orange-100 py-20 overflow-hidden rounded-xl shadow-lg mb-12">
-        <div class="container mx-auto text-center relative z-10">
-            <h1 class="text-5xl md:text-6xl font-bold text-orange-600 mb-6" style="font-family: 'Figtree', sans-serif;">A Sweet Selection Just For You</h1>
-            <p class="text-xl md:text-2xl text-gray-700 italic mb-10">Indulge in our freshly baked, handcrafted cookies.</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                Our Delicious Cookies
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Handcrafted with premium ingredients and baked fresh daily. Build your perfect cookie box!
+            </p>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-orange-200 to-yellow-100 opacity-50 rounded-xl"></div>
-    </div>
 
-    <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
-            @foreach ($cookies as $cookie)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-xl">
-                <div class="relative h-56 md:h-64 overflow-hidden">
-                    {{-- Using a dynamic placeholder image service --}}
-                    <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRiTdBQZqeyfGviqZOidT_wnYedWbFgd1NyCYxucz3q5IBHuG1iocQEoMsgK4FdF7pXP1bBfc5S6ZWwftdEgFvmXd21DKx4c2TMTfspxA" alt="A delicious {{ $cookie['name'] }} cookie" class="object-cover w-full h-full rounded-t-lg transition-transform duration-300 transform scale-100 hover:scale-105" loading="lazy">
-                    <div class="absolute top-2 right-2 bg-yellow-300 text-yellow-800 py-1 px-3 rounded-full text-xs font-bold shadow-sm">New!</div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-3">{{ $cookie['name'] }}</h3>
-                    <p class="text-gray-600 text-sm mb-4 h-10">{{ $cookie['description'] }}</p> {{-- h-10 ensures consistent height --}}
-                    <div class="flex items-center justify-between mt-6">
-                        <span class="text-2xl text-gray-800 font-bold">${{ number_format(rand(250, 450) / 100, 2) }}</span>
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <span>Add to Cart</span>
-                        </button>
+        <!-- Cookie Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            @foreach($cookies as $cookie)
+                <div class="cookie-card bg-white rounded-xl shadow-lg overflow-hidden"
+                     x-data="cookieCard({{ $cookie['id'] }})">
+
+                    <!-- Cookie Image -->
+                    <div class="relative h-64 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                        <div class="text-8xl">🍪</div>
+                        <div class="absolute top-4 right-4 bg-amber-500 text-white px-2 py-1 rounded-lg text-sm font-semibold">
+                            ${{ number_format($cookie['price'], 2) }}
+                        </div>
+                    </div>
+
+                    <!-- Cookie Info -->
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $cookie['name'] }}</h3>
+                        <p class="text-gray-600 mb-4 text-sm">{{ $cookie['description'] }}</p>
+
+                        <!-- Quantity Controls -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <button @click="decreaseQuantity()"
+                                        class="quantity-btn w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-700 font-bold">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+
+                                <span class="text-lg font-semibold text-gray-800 w-8 text-center" x-text="quantity"></span>
+
+                                <button @click="increaseQuantity()"
+                                        class="quantity-btn w-8 h-8 bg-amber-500 hover:bg-amber-600 rounded-full flex items-center justify-center text-white font-bold">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+
+                            <button @click="showModal = true"
+                                    class="text-amber-600 hover:text-amber-700 font-medium text-sm">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                More Info
+                            </button>
+                        </div>
+
+                        <!-- Add to Box Button -->
+                        <div x-show="quantity > 0"
+                             x-transition
+                             class="mt-4">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                        <span class="text-green-700 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            <span x-text="quantity"></span> added to your box!
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Modal -->
+                    <div x-show="showModal"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+                         @click.self="showModal = false">
+
+                        <div class="bg-white rounded-xl max-w-md w-full p-6"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95">
+
+                            <div class="text-center mb-4">
+                                <div class="text-6xl mb-4">🍪</div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">{{ $cookie['name'] }}</h3>
+                                <div class="text-amber-600 font-bold text-xl mb-4">${{ number_format($cookie['price'], 2) }}</div>
+                            </div>
+
+                            <p class="text-gray-600 mb-6">{{ $cookie['description'] }}</p>
+
+                            <div class="flex space-x-3">
+                                <button @click="showModal = false"
+                                        class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors">
+                                    Close
+                                </button>
+                                <button @click="increaseQuantity(); showModal = false"
+                                        class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Add to Box
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
+        </div>
+
+        <!-- Sticky Bottom Bar -->
+        <div x-show="$store.cart.totalItems > 0"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="translate-y-full"
+             x-transition:enter-end="translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="translate-y-0"
+             x-transition:leave-end="translate-y-full"
+             class="sticky-bottom bg-white border-t shadow-lg">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-box text-amber-600 text-xl mr-3"></i>
+                        <div>
+                            <div class="font-semibold text-gray-800">
+                                <span x-text="$store.cart.totalItems"></span> Items in Your Box
+                            </div>
+                            <div class="text-sm text-gray-600">Ready to checkout?</div>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('cart.index') }}"
+                       class="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        View My Box
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script>
+        function cookieCard(cookieId) {
+            return {
+                cookieId: cookieId,
+                quantity: 0,
+                showModal: false,
+
+                init() {
+                    // Get initial quantity from store
+                    const cart = Alpine.store('cart').items;
+                    this.quantity = cart[cookieId] || 0;
+
+                    // Watch for cart changes
+                    this.$watch('$store.cart.items', () => {
+                        const cart = Alpine.store('cart').items;
+                        this.quantity = cart[cookieId] || 0;
+                    });
+                },
+
+                increaseQuantity() {
+                    this.quantity++;
+                    Alpine.store('cart').updateItem(this.cookieId, this.quantity);
+                },
+
+                decreaseQuantity() {
+                    if (this.quantity > 0) {
+                        this.quantity--;
+                        Alpine.store('cart').updateItem(this.cookieId, this.quantity);
+                    }
+                }
+            }
+        }
+    </script>
 @endsection
