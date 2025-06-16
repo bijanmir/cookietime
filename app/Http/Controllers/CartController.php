@@ -37,11 +37,24 @@ class CartController extends Controller
 
         session(['cart' => $cart]);
 
-        return response()->json([
-            'success' => true,
-            'totalItems' => array_sum($cart),
-            'cart' => $cart
-        ]);
+        // Get updated cart items for rendering
+        $cartItems = [];
+        foreach ($cart as $cookieId => $quantity) {
+            $cookie = Cookie::find($cookieId);
+            if ($cookie) {
+                $cartItems[] = array_merge($cookie, ['quantity' => $quantity]);
+            }
+        }
+
+        // Return just the HTML content for HTMX to swap
+        return response(view('cart._items', compact('cartItems'))->render())
+            ->header('Content-Type', 'text/html')
+            ->header('HX-Trigger', json_encode([
+                'cartUpdated' => [
+                    'totalItems' => array_sum($cart),
+                    'cart' => $cart
+                ]
+            ]));
     }
 
     public function remove(Request $request)
@@ -60,16 +73,15 @@ class CartController extends Controller
             }
         }
 
-        $cartHtml = view('cart._items', compact('cartItems'))->render();
-        $badgeHtml = view('cart._badge', ['totalItems' => array_sum($cart)])->render();
-
-        return response()->json([
-            'success' => true,
-            'html' => $cartHtml,
-            'badge' => $badgeHtml,
-            'totalItems' => array_sum($cart),
-            'cart' => $cart
-        ]);
+        // Return just the HTML content for HTMX to swap
+        return response(view('cart._items', compact('cartItems'))->render())
+            ->header('Content-Type', 'text/html')
+            ->header('HX-Trigger', json_encode([
+                'cartUpdated' => [
+                    'totalItems' => array_sum($cart),
+                    'cart' => $cart
+                ]
+            ]));
     }
 
     public function partial()

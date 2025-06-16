@@ -53,9 +53,48 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+
+        /* HTMX Loading States */
+        .htmx-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .htmx-request .htmx-indicator {
+            display: block;
+        }
+
+        .htmx-indicator {
+            display: none;
+        }
+
+        /* Loading spinner for buttons */
+        .htmx-request button {
+            position: relative;
+        }
+
+        .htmx-request button::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-gray-50" x-data="appData()">
+<body class="bg-gray-50" x-data="appData()" hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'>
 <!-- Navigation -->
 <nav class="bg-white shadow-lg sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,6 +183,18 @@
 </footer>
 
 <script>
+    // Configure HTMX globally with CSRF token
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set CSRF token for all HTMX requests
+        htmx.config.requestClass = 'htmx-request';
+        htmx.config.indicatorClass = 'htmx-indicator';
+
+        // Add CSRF token to all requests
+        document.body.addEventListener('htmx:configRequest', function(event) {
+            event.detail.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        });
+    });
+
     // Alpine.js Data
     function appData() {
         return {
@@ -223,14 +274,6 @@
             }
         });
     });
-
-    // HTMX Configuration
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configure HTMX
-        htmx.config.requestClass = 'htmx-request';
-        htmx.config.indicatorClass = 'htmx-indicator';
-    });
 </script>
-
 </body>
 </html>

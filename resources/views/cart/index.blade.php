@@ -16,7 +16,7 @@
         </div>
 
         <!-- Cart Items Container -->
-        <div id="cart-items-container">
+        <div id="cart-items-container" hx-swap="innerHTML" hx-swap-oob="true">
             @include('cart._items', ['cartItems' => $cartItems])
         </div>
 
@@ -34,31 +34,82 @@
     </div>
 
     <script>
-        // HTMX Response Handler for Cart Updates
-        document.addEventListener('htmx:afterRequest', function(event) {
-            if (event.detail.target.id === 'cart-items-container') {
-                const response = JSON.parse(event.detail.xhr.responseText);
+        // Listen for cart update events from HTMX
+        document.addEventListener('cartUpdated', function(event) {
+            const data = event.detail;
 
-                if (response.success) {
-                    // Update the cart items HTML
-                    document.getElementById('cart-items-container').innerHTML = response.html;
+            console.log('Cart updated via HTMX:', data);
 
-                    // Update localStorage
-                    localStorage.setItem('cookieCart', JSON.stringify(response.cart));
+            // Update localStorage
+            localStorage.setItem('cookieCart', JSON.stringify(data.cart));
 
-                    // Update Alpine store
-                    Alpine.store('cart').items = response.cart;
-                    Alpine.store('cart').totalItems = response.totalItems;
+            // Update Alpine store
+            if (Alpine.store('cart')) {
+                Alpine.store('cart').items = data.cart;
+                Alpine.store('cart').totalItems = data.totalItems;
+            }
 
-                    // Update cart badge
-                    if (response.badge) {
-                        document.getElementById('cart-badge').outerHTML = response.badge;
-                    }
-
-                    // Dispatch sync event
-                    document.dispatchEvent(new CustomEvent('cart:sync'));
+            // Update cart badge
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                if (data.totalItems > 0) {
+                    badge.textContent = data.totalItems;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
                 }
             }
+
+            // Dispatch sync event for other components
+            document.dispatchEvent(new CustomEvent('cart:sync'));
+        });
+
+        // Enhanced HTMX error handling
+        document.addEventListener('htmx:responseError', function(event) {
+            console.error('HTMX Response Error:', event.detail);
+
+            // Show user-friendly error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+            errorDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span>Failed to update cart. Please try again.</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentElement) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        });
+
+        // Debug HTMX requests
+        document.addEventListener('htmx:beforeRequest', function(event) {
+            console.log('HTMX Request:', {
+                method: event.detail.requestConfig.verb,
+                url: event.detail.requestConfig.path,
+                data: event.detail.requestConfig.parameters
+            });
+        });
+
+        // Log when content is swapped
+        document.addEventListener('htmx:afterSwap', function(event) {
+            console.log('HTMX content swapped:', event.detail.target);
+
+            // Re-process HTMX attributes on new content
+            htmx.process(event.detail.target);
+        });
+
+        // Ensure HTMX processes new content
+        document.addEventListener('htmx:afterSettle', function(event) {
+            console.log('HTMX settled:', event.detail.target);
         });
     </script>
 @endsection
