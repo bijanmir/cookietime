@@ -181,10 +181,13 @@
                         <i class="fas fa-arrow-left mr-2"></i>
                         Continue Shopping
                     </a>
-                    <button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                        <i class="fas fa-credit-card mr-2"></i>
-                        Checkout
-                    </button>
+                    <form action="{{ route('checkout.create') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                            <i class="fas fa-credit-card mr-2"></i>
+                            Checkout with Stripe
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

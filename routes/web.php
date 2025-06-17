@@ -3,6 +3,7 @@
 use App\Http\Controllers\CookieController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return redirect()->route('cookies.index');
@@ -15,3 +16,30 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 Route::get('/cart/partial', [CartController::class, 'partial'])->name('cart.partial');
 Route::get('/cart/badge', [CartController::class, 'badge'])->name('cart.badge');
 Route::match(['get', 'post'], '/cart/sync', [CartController::class, 'sync'])->name('cart.sync');
+
+
+Route::post('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/cancelled/{order}', [CheckoutController::class, 'cancelled'])->name('checkout.cancelled');
+Route::post('/stripe/webhook', [CheckoutController::class, 'webhook'])->name('stripe.webhook');
+
+Route::get('/test-stripe', function() {
+    try {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        $account = \Stripe\Account::retrieve();
+        return "Stripe connection successful! Account ID: " . $account->id;
+    } catch (Exception $e) {
+        return "Stripe error: " . $e->getMessage();
+    }
+});
+
+Route::get('/test-mail', function() {
+    try {
+        Mail::raw('Test email from CookieTime', function($message) {
+            $message->to('test@example.com')->subject('Test Email');
+        });
+        return "Mail sent successfully!";
+    } catch (Exception $e) {
+        return "Mail error: " . $e->getMessage();
+    }
+});
