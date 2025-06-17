@@ -12,8 +12,16 @@
                     <div class="block md:hidden">
                         <!-- Cookie Header -->
                         <div class="flex items-start space-x-4 mb-4">
-                            <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <div class="text-2xl">🍪</div>
+                            <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                @if(isset($item['image']) && !empty($item['image']))
+                                    <img src="{{ $item['image'] }}"
+                                         alt="{{ $item['name'] }}"
+                                         class="w-full h-full object-cover rounded-lg"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div class="text-2xl hidden">🍪</div>
+                                @else
+                                    <div class="text-2xl">🍪</div>
+                                @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ $item['name'] }}</h3>
@@ -88,8 +96,16 @@
                     <!-- Desktop Layout -->
                     <div class="hidden md:flex items-center space-x-6">
                         <!-- Cookie Image -->
-                        <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <div class="text-3xl">🍪</div>
+                        <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            @if(isset($item['image']) && !empty($item['image']))
+                                <img src="{{ $item['image'] }}"
+                                     alt="{{ $item['name'] }}"
+                                     class="w-full h-full object-cover rounded-lg"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="text-3xl hidden">🍪</div>
+                            @else
+                                <div class="text-3xl">🍪</div>
+                            @endif
                         </div>
 
                         <!-- Cookie Info -->
@@ -181,9 +197,9 @@
                         <i class="fas fa-arrow-left mr-2"></i>
                         Continue Shopping
                     </a>
-                    <form action="{{ route('checkout.create') }}" method="POST" style="display: inline;">
+                    <form action="{{ route('checkout.create') }}" method="POST" class="flex-1">
                         @csrf
-                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                             <i class="fas fa-credit-card mr-2"></i>
                             Checkout with Stripe
                         </button>

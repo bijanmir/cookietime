@@ -35,16 +35,30 @@
 
                 @foreach($order->items as $item)
                     <div class="flex items-center space-x-4 py-4 border-b border-gray-100 last:border-b-0">
-                        <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <div class="text-2xl">🍪</div>
+                        <!-- Cookie Image -->
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            @if(isset($item['image']) && !empty($item['image']))
+                                <img src="{{ $item['image'] }}"
+                                     alt="{{ $item['name'] }}"
+                                     class="w-full h-full object-cover rounded-lg"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="text-2xl hidden">🍪</div>
+                            @else
+                                <div class="text-2xl">🍪</div>
+                            @endif
                         </div>
+
+                        <!-- Item Details -->
                         <div class="flex-1">
                             <h4 class="font-semibold text-gray-800">{{ $item['name'] }}</h4>
-                            <p class="text-sm text-gray-600">{{ $item['description'] }}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">{{ $item['description'] }}</p>
                             <p class="text-sm text-amber-600 font-medium">${{ number_format($item['price'], 2) }} each</p>
                         </div>
+
+                        <!-- Quantity and Price -->
                         <div class="text-right">
-                            <div class="font-semibold text-gray-800">{{ $item['quantity'] }} × ${{ number_format($item['price'], 2) }}</div>
+                            <div class="font-semibold text-gray-800">{{ $item['quantity'] }} kit{{ $item['quantity'] > 1 ? 's' : '' }}</div>
+                            <div class="text-sm text-gray-600">{{ $item['quantity'] }} × ${{ number_format($item['price'], 2) }}</div>
                             <div class="text-lg font-bold text-amber-600">${{ number_format($item['subtotal'], 2) }}</div>
                         </div>
                     </div>
@@ -54,7 +68,7 @@
                 <div class="flex justify-between items-center pt-6 border-t border-gray-200 mt-6">
                     <div>
                         <div class="text-lg font-semibold text-gray-800">Total</div>
-                        <div class="text-sm text-gray-600">{{ $order->total_items }} cookies</div>
+                        <div class="text-sm text-gray-600">{{ $order->total_items }} cookie kit{{ $order->total_items > 1 ? 's' : '' }}</div>
                     </div>
                     <div class="text-2xl font-bold text-gray-800">${{ number_format($order->total_amount, 2) }}</div>
                 </div>
@@ -87,7 +101,7 @@
                 </li>
                 <li class="flex items-center">
                     <i class="fas fa-cookie-bite mr-2"></i>
-                    We'll start baking your fresh cookies right away
+                    We'll start preparing your fresh cookie kits right away
                 </li>
                 <li class="flex items-center">
                     <i class="fas fa-shipping-fast mr-2"></i>
@@ -105,8 +119,18 @@
             <a href="{{ route('cookies.index') }}"
                class="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors inline-flex items-center">
                 <i class="fas fa-cookie-bite mr-2"></i>
-                Order More Cookies
+                Order More Cookie Kits
             </a>
         </div>
     </div>
+
+    <style>
+        /* Line clamp utility for item descriptions */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
 @endsection
