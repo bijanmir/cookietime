@@ -43,3 +43,23 @@ Route::get('/test-mail', function() {
         return "Mail error: " . $e->getMessage();
     }
 });
+
+Route::get('/test-success/{order}', function(App\Models\Order $order) {
+    return view('checkout.success', compact('order'));
+});
+
+Route::get('/test-cancelled/{order}', function(App\Models\Order $order) {
+    return view('checkout.cancelled', compact('order'));
+});
+
+
+Route::get('/debug-urls/{order}', function(App\Models\Order $order) {
+    $successUrl = route('checkout.success', ['order' => $order->id]) . '?session_id={CHECKOUT_SESSION_ID}';
+    $cancelUrl = route('checkout.cancelled', ['order' => $order->id]);
+
+    return response()->json([
+        'success_url' => $successUrl,
+        'cancel_url' => $cancelUrl,
+        'order_id' => $order->id
+    ]);
+});
