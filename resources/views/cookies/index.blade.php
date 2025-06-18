@@ -19,7 +19,7 @@
              class="max-w-2xl mx-auto">
 
             <template x-if="selectedCookie">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden absolute top-0 left-0 h-full w-full z-50  ">
+                <div class="bg-white rounded-xl shadow-lg  absolute top-0 left-0 h-full w-full z-50  ">
                     <!-- Back Button -->
                     <div class="p-4 border-b">
                         <button @click="closeDetails()"
