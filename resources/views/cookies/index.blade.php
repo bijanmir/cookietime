@@ -15,7 +15,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 transform scale-100"
              x-transition:leave-end="opacity-0 transform scale-95"
-             class="fixed inset-0 bg-white z-40 overflow-y-auto"
+             class="fixed inset-0 bg-white z-50 overflow-y-auto"
              @click.away="closeDetails()"
              @keydown.escape="closeDetails()">
 
